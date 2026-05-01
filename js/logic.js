@@ -95,7 +95,7 @@ function runHardRules(inputs) {
   const rr      = inputs.rr;
   const rrLevel = scoreNumeric(rr, [
     { condition: v => v > 30 || v < 9, level: 'IMMEDIATE' },
-    { condition: v => v > 20,          level: 'URGENT'    },
+    { condition: v => v > 20 || v < 12, level: 'URGENT'   },  // added v < 12
   ]);
   register(
     'Resp. Rate',
@@ -104,18 +104,20 @@ function runHardRules(inputs) {
     `RR ${parseFloat(rr) > 30 ? 'severe tachypnoea' : 'apnoeic range'} (${rr}/min)`
   );
 
-  // ── AVPU ─────────────────────────────────────────────
-  const avpu      = inputs.avpu || 'A';
-  const avpuLevel = avpu === 'U' ? 'IMMEDIATE'
-                : avpu === 'V' || avpu === 'P' ? 'URGENT'
-                : 'ROUTINE';
-  const avpuLabels = { A: 'Alert', V: 'Voice only', P: 'Pain only', U: 'Unresponsive' };
-  register(
-    'AVPU',
-    avpuLabels[avpu] || avpu,
-    avpuLevel,
-    `Reduced consciousness — AVPU: ${avpu} (${avpuLabels[avpu]})`
-  );
+// DELETE the entire AVPU block in runHardRules() and REPLACE with:
+
+const gcs      = inputs.gcsTotal;
+const gcsLevel = gcs <= 8  ? 'IMMEDIATE'
+               : gcs <= 12 ? 'URGENT'
+               : 'ROUTINE';
+register(
+  'GCS',
+  `${gcs}/15`,
+  gcsLevel,
+  gcs <= 8  ? `Severe impaired consciousness — GCS ${gcs}`
+  : gcs <= 12 ? `Moderate impaired consciousness — GCS ${gcs}`
+  : ''
+);
 
   // ── Mobility ─────────────────────────────────────────
   const mobility      = inputs.mobility || 'walking';

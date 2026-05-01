@@ -6,32 +6,46 @@
   <meta name="description" content="SAATHI – Smart AI-Assisted Triage and Healthcare Interface" />
   <title>SAATHI — AI Triage System</title>
 
-  <!-- Fonts: IBM Plex Sans (clinical body) + IBM Plex Mono (vitals/numbers) -->
+  <!-- Fonts: DM Sans (body) + DM Mono (vitals/numbers) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
 
-  <!-- ═══════════════════════════════════ SETTINGS MODAL ═══════════════════════ -->
-  <div id="settings-overlay" class="modal-overlay active" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+  <!-- ═══════════════════════════════════════ SPLASH SCREEN ═══════════════════ -->
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-inner">
+      <div class="splash-logo-row">
+        <span class="splash-mark">✦</span>
+        <span class="splash-wordmark">SAATHI</span>
+      </div>
+      <p class="splash-tagline">Smart AI-Assisted Triage &amp; Healthcare Interface</p>
+      <p class="splash-tagline-ur">اسمارٹ اے آئی ٹریاج سسٹم</p>
+      <div class="splash-bar-track">
+        <div class="splash-bar-fill" id="splash-bar"></div>
+      </div>
+      <p class="splash-version">v0.1 · OPD Triage Prototype</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ SETTINGS MODAL ══════════════════ -->
+  <div id="settings-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
     <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-logo">
-          <span class="logo-mark">✦</span>
-          <span class="logo-text">SAATHI</span>
-        </div>
-        <p class="modal-subtitle">Smart AI-Assisted Triage &amp; Healthcare Interface</p>
-        <p class="modal-subtitle-ur">اسمارٹ اے آئی ٹریاج سسٹم</p>
+      <div class="modal-top-bar">
+        <span class="modal-title" id="settings-title">Settings &nbsp;/&nbsp; ترتیبات</span>
+        <button id="settings-close-btn" class="icon-btn" aria-label="Close settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
 
       <div class="modal-body">
         <label class="field-label" for="gemini-key">
           Groq API Key
-          <span class="field-label-ur">جیمنی اے پی آئی کی</span>
+          <span class="field-label-ur">گروک اے پی آئی کی</span>
         </label>
         <div class="key-input-row">
           <input
@@ -43,35 +57,30 @@
             spellcheck="false"
           />
           <button id="toggle-key-visibility" class="icon-btn" aria-label="Show key" title="Show / Hide key">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
-        <p class="field-hint">Key is stored in session memory only. Never saved to disk or transmitted except to Google's API.</p>
+        <p class="field-hint">Stored in session memory only. Get a free key at <strong>console.groq.com/keys</strong></p>
 
         <div class="modal-facility">
           <label class="field-label" for="facility-name">
-            Facility Name (optional)
+            Facility Name
             <span class="field-label-ur">سہولت کا نام</span>
           </label>
           <input type="text" id="facility-name" class="text-input" placeholder="e.g. DHQ Hospital, Lahore" />
         </div>
       </div>
 
-      <button id="start-btn" class="primary-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        Start Session &nbsp;/&nbsp; سیشن شروع کریں
+      <button id="save-settings-btn" class="primary-btn">
+        Save Settings &nbsp;/&nbsp; محفوظ کریں
       </button>
-
-      <p class="disclaimer-inline">
-        ⚠ Decision-support tool only. Clinical responsibility remains with the attending physician.
-      </p>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════ MAIN APP ═══════════════════════════════ -->
+  <!-- ═══════════════════════════════════════ MAIN APP ════════════════════════ -->
   <div id="app" class="app-shell hidden">
 
-    <!-- ── TOP HEADER ─────────────────────────────────────────────────────────── -->
+    <!-- ── TOP HEADER ──────────────────────────────────────────────────────── -->
     <header class="app-header">
       <div class="header-brand">
         <span class="logo-mark">✦</span>
@@ -88,12 +97,12 @@
           <span id="live-date" class="clock-date">—</span>
         </div>
         <button id="settings-btn" class="icon-btn" title="Settings" aria-label="Open settings">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
       </div>
     </header>
 
-    <!-- ── TOKEN BAR ──────────────────────────────────────────────────────────── -->
+    <!-- ── TOKEN BAR ───────────────────────────────────────────────────────── -->
     <div class="token-bar">
       <span class="token-label">Current Token</span>
       <span id="token-display" class="token-number">#001</span>
@@ -101,10 +110,10 @@
       <span id="patient-count" class="token-number">0</span>
     </div>
 
-    <!-- ── TWO-PANEL LAYOUT ───────────────────────────────────────────────────── -->
+    <!-- ── TWO-PANEL LAYOUT ────────────────────────────────────────────────── -->
     <main class="workspace">
 
-      <!-- ── LEFT: INPUT PANEL ─────────────────────────────────────────────── -->
+      <!-- ── LEFT: INPUT PANEL ──────────────────────────────────────────── -->
       <section class="input-panel" aria-label="Patient Input">
 
         <!-- Chief Complaint -->
@@ -131,80 +140,115 @@
         <div class="vitals-grid">
           <div class="vital-input-card">
             <div class="vital-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             </div>
             <label class="vital-label" for="spo2">SpO₂ <span class="vital-unit">%</span></label>
             <input type="number" id="spo2" class="vital-input" min="0" max="100" placeholder="98" />
-            <div class="vital-ref">Normal: ≥95</div>
+            <div class="vital-ref">Normal ≥95</div>
           </div>
 
           <div class="vital-input-card">
             <div class="vital-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </div>
             <label class="vital-label" for="systolic-bp">Systolic BP <span class="vital-unit">mmHg</span></label>
             <input type="number" id="systolic-bp" class="vital-input" min="0" max="300" placeholder="120" />
-            <div class="vital-ref">Normal: 90–159</div>
+            <div class="vital-ref">Normal 90–159</div>
           </div>
 
           <div class="vital-input-card">
             <div class="vital-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
             <label class="vital-label" for="heart-rate">Heart Rate <span class="vital-unit">bpm</span></label>
             <input type="number" id="heart-rate" class="vital-input" min="0" max="300" placeholder="78" />
-            <div class="vital-ref">Normal: 40–109</div>
+            <div class="vital-ref">Normal 40–109</div>
           </div>
 
           <div class="vital-input-card">
             <div class="vital-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
             </div>
             <label class="vital-label" for="temperature">Temperature <span class="vital-unit">°C</span></label>
             <input type="number" id="temperature" class="vital-input" min="30" max="45" step="0.1" placeholder="37.0" />
-            <div class="vital-ref">Normal: 36.5–38.4</div>
+            <div class="vital-ref">Normal 36.5–38.4</div>
           </div>
 
           <div class="vital-input-card">
             <div class="vital-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
             </div>
             <label class="vital-label" for="resp-rate">Resp. Rate <span class="vital-unit">/min</span></label>
             <input type="number" id="resp-rate" class="vital-input" min="0" max="60" placeholder="16" />
-            <div class="vital-ref">Normal: 12–20</div>
+            <div class="vital-ref">Normal 12–20</div>
           </div>
         </div>
 
-        <!-- AVPU -->
+        <!-- GCS -->
         <div class="section-heading">
-          Level of Consciousness (AVPU)
+          Level of Conciousness (GCS)
           <span class="section-heading-ur">شعور کی سطح</span>
         </div>
-        <div class="radio-group avpu-group">
-          <label class="radio-card green-card">
-            <input type="radio" name="avpu" value="A" checked />
-            <span class="radio-pill">A</span>
-            <span class="radio-label-main">Alert</span>
-            <span class="radio-label-sub">بیدار</span>
-          </label>
-          <label class="radio-card yellow-card">
-            <input type="radio" name="avpu" value="V" />
-            <span class="radio-pill">V</span>
-            <span class="radio-label-main">Voice</span>
-            <span class="radio-label-sub">آواز پر</span>
-          </label>
-          <label class="radio-card yellow-card">
-            <input type="radio" name="avpu" value="P" />
-            <span class="radio-pill">P</span>
-            <span class="radio-label-main">Pain</span>
-            <span class="radio-label-sub">درد پر</span>
-          </label>
-          <label class="radio-card red-card">
-            <input type="radio" name="avpu" value="U" />
-            <span class="radio-pill">U</span>
-            <span class="radio-label-main">Unresponsive</span>
-            <span class="radio-label-sub">بے ہوش</span>
-          </label>
+
+        <div class="gcs-block">
+          <!-- Eye Opening -->
+          <div class="gcs-row">
+            <div class="gcs-row-meta">
+              <span class="gcs-component-name">Eye Opening</span>
+              <span class="gcs-component-range">E&nbsp;1–4</span>
+            </div>
+            <div class="gcs-stepper">
+              <button class="gcs-dec" data-target="gcs-eye">−</button>
+              <div class="gcs-val-block">
+                <span class="gcs-num" id="gcs-eye-num">4</span>
+                <span class="gcs-desc" id="gcs-eye-desc">Spontaneous</span>
+              </div>
+              <button class="gcs-inc" data-target="gcs-eye">+</button>
+            </div>
+            <input type="hidden" id="gcs-eye" value="4" data-min="1" data-max="4" />
+          </div>
+
+          <!-- Verbal Response -->
+          <div class="gcs-row">
+            <div class="gcs-row-meta">
+              <span class="gcs-component-name">Verbal Response</span>
+              <span class="gcs-component-range">V&nbsp;1–5</span>
+            </div>
+            <div class="gcs-stepper">
+              <button class="gcs-dec" data-target="gcs-verbal">−</button>
+              <div class="gcs-val-block">
+                <span class="gcs-num" id="gcs-verbal-num">5</span>
+                <span class="gcs-desc" id="gcs-verbal-desc">Oriented</span>
+              </div>
+              <button class="gcs-inc" data-target="gcs-verbal">+</button>
+            </div>
+            <input type="hidden" id="gcs-verbal" value="5" data-min="1" data-max="5" />
+          </div>
+
+          <!-- Motor Response -->
+          <div class="gcs-row">
+            <div class="gcs-row-meta">
+              <span class="gcs-component-name">Motor Response</span>
+              <span class="gcs-component-range">M&nbsp;1–6</span>
+            </div>
+            <div class="gcs-stepper">
+              <button class="gcs-dec" data-target="gcs-motor">−</button>
+              <div class="gcs-val-block">
+                <span class="gcs-num" id="gcs-motor-num">6</span>
+                <span class="gcs-desc" id="gcs-motor-desc">Obeys commands</span>
+              </div>
+              <button class="gcs-inc" data-target="gcs-motor">+</button>
+            </div>
+            <input type="hidden" id="gcs-motor" value="6" data-min="1" data-max="6" />
+          </div>
+
+          <!-- GCS Total -->
+          <div class="gcs-total-row">
+            <span class="gcs-total-label">GCS Total</span>
+            <span class="gcs-total-value" id="gcs-total">15</span>
+            <span class="gcs-total-slash">/15</span>
+            <span class="gcs-total-desc" id="gcs-total-desc">Normal</span>
+          </div>
         </div>
 
         <!-- Mobility -->
@@ -281,9 +325,9 @@
             </div>
           </div>
 
-          <div class="pain-scale-group" id="pain-scale-wrapper">
+          <div class="pain-scale-group">
             <div class="injury-site-label">
-              Pain Score: <strong id="pain-display">0</strong> / 10
+              Pain Score: <strong id="pain-display">0</strong>/10
               <span class="vital-unit">&nbsp;درد کی شدت</span>
             </div>
             <div class="pain-slider-track">
@@ -300,25 +344,23 @@
 
         <!-- Submit -->
         <button id="triage-btn" class="triage-submit-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           Triage Patient &nbsp;/&nbsp; مریض کا تریاج کریں
         </button>
 
       </section>
 
-      <!-- ── RIGHT: TRIAGE SLIP ─────────────────────────────────────────────── -->
+      <!-- ── RIGHT: TRIAGE SLIP ──────────────────────────────────────────── -->
       <section class="slip-panel" aria-label="Triage Slip" id="slip-panel">
 
-        <!-- Empty State -->
         <div class="slip-empty" id="slip-empty">
           <div class="slip-empty-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           </div>
           <p class="slip-empty-text">Enter patient data and press<br/><strong>Triage Patient</strong> to generate slip</p>
           <p class="slip-empty-ur">مریض کا ڈیٹا درج کریں اور تریاج کریں</p>
         </div>
 
-        <!-- Slip Card (shown after triage) -->
         <div class="slip-card hidden" id="slip-card">
 
           <div class="slip-header-band" id="slip-priority-band">
@@ -348,9 +390,7 @@
             </div>
 
             <div class="slip-section-title">Vital Summary &nbsp;/&nbsp; اہم علامات</div>
-            <div class="vitals-summary-grid" id="vitals-summary">
-              <!-- Populated by JS -->
-            </div>
+            <div class="vitals-summary-grid" id="vitals-summary"></div>
 
             <div class="slip-section-title">Chief Complaint &nbsp;/&nbsp; مریض کی شکایت</div>
             <div class="slip-complaint" id="slip-complaint">—</div>
@@ -364,48 +404,44 @@
               </div>
             </div>
 
-            <div class="slip-section-title">AI Probable Diagnoses &nbsp;/&nbsp; ممکنہ تشخیص</div>
-            <div class="slip-diagnoses-list" id="slip-diagnoses"></div>
-
             <div class="slip-disclaimer">
               ⚠ Decision-support tool only. Clinical responsibility remains with the attending physician at all times.
             </div>
 
-          </div><!-- /.slip-body -->
+          </div>
 
           <div class="slip-actions">
             <button id="print-btn" class="action-btn print-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
               Print Slip
             </button>
             <button id="new-patient-btn" class="action-btn new-patient-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               New Patient / نیا مریض
             </button>
           </div>
 
-        </div><!-- /.slip-card -->
+        </div>
 
-      </section><!-- /.slip-panel -->
+      </section>
 
-    </main><!-- /.workspace -->
+    </main>
 
-    <!-- Footer -->
     <footer class="app-footer">
       <span>SAATHI v0.1 — Prototype for OPD Triage</span>
       <span class="footer-sep">·</span>
-      <span>Powered by Gemini AI + Hard-Rule Clinical Logic</span>
+      <span>Powered by Groq AI + Hard-Rule Clinical Logic</span>
       <span class="footer-sep">·</span>
       <span>Not for clinical deployment without validation</span>
     </footer>
 
-  </div><!-- /#app -->
+  </div>
 
-  <!-- Loading Spinner (shown during AI call) -->
+  <!-- Loading Spinner -->
   <div id="loading-overlay" class="loading-overlay hidden" role="status" aria-live="polite">
     <div class="loading-inner">
       <div class="spinner"></div>
-      <span class="loading-text">Analysing complaint with AI…<br/><span style="font-size:0.8em;opacity:0.7">اے آئی تجزیہ جاری ہے</span></span>
+      <span class="loading-text">Analysing with AI…<br/><span style="font-size:0.8em;opacity:0.7">اے آئی تجزیہ جاری ہے</span></span>
     </div>
   </div>
 
