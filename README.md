@@ -24,66 +24,9 @@ patient to one of three priority categories:
 | **Routine** | 🟢 Green | Standard queue |
 
 The system runs **fully offline**, requires **no hospital IT
-infrastructure**, and supports **English, Urdu, and regional languages**.
+infrastructure**, and supports **English and Urdu**.
 
 ---
-
-## Repository Structure
-
-```
-saathi/
-├── saathi_model.py        ← GBC training & inference pipeline
-├── saathi_ui.py           ← Desktop/tablet prototype UI (Tkinter)
-├── requirements.txt       ← Python dependencies
-├── models/                ← Auto-created on first training run
-│   ├── saathi_gbc_model.pkl
-│   ├── scaler.pkl
-│   ├── label_encoder.pkl
-│   ├── confusion_matrix.png
-│   └── feature_importance.png
-├── slips/                 ← Auto-created; printed triage slips (.txt)
-└── README.md
-```
-
----
-
-## Quickstart
-
-### 1. Clone
-
-```bash
-git clone https://github.com/<your-handle>/saathi.git
-cd saathi
-```
-
-### 2. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Train the model
-
-```bash
-python saathi_model.py
-```
-
-This will:
-- Generate a 5,000-record synthetic OPD dataset (proxy for real OPD registers)
-- Train the Gradient Boosted Classifier
-- Print accuracy, AUC, and a 5-fold cross-validation report
-- Save the model to `models/`
-- Save evaluation plots to `models/`
-
-### 4. Launch the prototype UI
-
-```bash
-python saathi_ui.py
-```
-
----
-
-## Machine Learning Pipeline
 
 ### Input Features
 
@@ -91,45 +34,16 @@ python saathi_ui.py
 |---|---|---|
 | `spo2` | Oxygen saturation (%) | 60 – 100 |
 | `sbp` | Systolic blood pressure (mmHg) | 60 – 250 |
-| `dbp` | Diastolic blood pressure (mmHg) | 40 – 150 |
-| `temperature` | Body temperature (°C) | 34 – 43 |
 | `heart_rate` | Heart rate (bpm) | 30 – 220 |
-| `complaint` | Chief complaint (integer code) | 0 – 9 |
-
-### Model: `GradientBoostingClassifier`
-
-```python
-GradientBoostingClassifier(
-    n_estimators   = 300,
-    learning_rate  = 0.08,
-    max_depth      = 4,
-    subsample      = 0.8,
-    max_features   = "sqrt",
-    random_state   = 42,
-)
-```
-
-**Why GBC?**
-- Handles mixed numeric + categorical features without one-hot explosion
-- Robust to the class imbalance typical of OPD registers (many Routine,
-  fewer Immediate presentations)
-- Excellent probability calibration — essential for reliable confidence
-  scores on the triage slip
-- Low inference latency: suitable for ONNX export and Android deployment
-
-### Expected Performance (Synthetic Dataset — for proof of concept only)
-
-| Metric | Value |
-|---|---|
-| Accuracy | ≥ 0.95 |
-| Macro AUC (OvR) | ≥ 0.97 |
-| Sensitivity – Immediate | ≥ 0.95 |
-| Specificity – Immediate | ≥ 0.97 |
-
-> ⚠ **These figures are from a synthetic dataset.**  Actual performance
-> will be established during prospective clinical validation at district
-> hospitals.  Sensitivity and specificity for the **Immediate** category
-> are the primary clinical endpoints.
+| `temperature` | Body temperature (°C) | 34 – 43 |
+| `respiratory_rate` | Respiratory rate (/min) | 12 – 20 |
+| `gcs_eye` | GCS — Eye opening | 1 – 4 |
+| `gcs_verbal` | GCS — Verbal response | 1 – 5 |
+| `gcs_motor` | GCS — Motor response | 1 – 6 |
+| `mobility` | Patient mobility status | `walking_unaided` / `stretcher_assisted` |
+| `vision_complaint` | Vision symptom | `none_normal` / `blurred_painful` / `sudden_loss` |
+| `injury_site` | Site of injury | `none` / `head` / `neck` / `chest` / `abdomen` |
+| `pain_score` | Self-reported pain score | 1 – 10 |
 
 ---
 
@@ -138,14 +52,13 @@ GradientBoostingClassifier(
 | Feature | Status |
 |---|---|
 | English interface | ✅ |
-| Urdu transliteration interface | ✅ |
+| Urdu translation interface | ✅ |
 | Real-time vital-sign range validation | ✅ |
 | GBC model inference | ✅ |
 | Rule-based fallback (no model file) | ✅ |
 | Colour-coded triage result card | ✅ |
 | Clinical flag auto-detection | ✅ |
-| Triage slip print / save (.txt) | ✅ |
-| Model confidence display | ✅ |
+| Triage slip print | ✅ |
 | Android tablet adaptation (planned) | 🔜 |
 | Offline ONNX model export (planned) | 🔜 |
 | Thermal printer integration (planned) | 🔜 |
